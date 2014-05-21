@@ -2,6 +2,12 @@
 
 {% block content %}
   <h1> Kelvin's Directors' REST API for Livestream </h1>
-  <p> Please enter your Livestream ID: </p>
+  <form class="form-inline" role="form">
+  <div class="form-group">
+    <label class="sr-only" for="livestreamID">Livestream ID</label>
+    <input type="lvs-ID" class="form-control" id="livestreamID" placeholder="LivestreamID">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
 
 {% endblock %}
