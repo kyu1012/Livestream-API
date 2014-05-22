@@ -32,5 +32,10 @@
 </form>
 
 
-  <ul><a href ="#"> List all Directors </a></ul>
+  <ul><a href ="/list"> List all Directors </a></ul>
+  <ul>
+    {% for directors in dirs %}
+      <li>{{directors|json}}</li>
+    {% endfor %}
+  </ul>
 {% endblock %}

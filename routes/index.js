@@ -1,5 +1,6 @@
 var request = require("request");
 var models = require("../models");
+var async = require("async");
 
 /*
  * GET home page.
@@ -16,11 +17,12 @@ exports.users = function(req, res){
 exports.submit_data = function(req, res){
   var dirID = req.body.lvsID; //request livestream ID from form
   var apiURL = "https://api.new.livestream.com/accounts/" + dirID; // livestream API Get URL
+
   var options = {
     url: apiURL,
     'content-type': 'application/json'
   };
-  var callback = function(error, response, body) {
+  var reqCallback = function(error, response, body) {
     if (!error && response.statusCode == 200) {
         var info = JSON.parse(body);
         var livestream_id = dirID;
@@ -48,13 +50,20 @@ exports.submit_data = function(req, res){
     }
   }
 
-  request(options, callback);
-
-  //querys and renders director info on users page
-  // *** Callback issue, use Async ***
-  models.Director.findOne({"livestream_id": dirID}, function(err, info){
-    console.log("this is docs from mongo query " + info)
-    res.render('users', {"docs": info});
+  async.series([
+    function(callback){
+      request(options, reqCallback);
+      callback();
+    },
+    function(callback){
+      models.Director.findOne({"livestream_id": dirID}, function(err, info){
+        res.render('users', {"docs": info});
+      });
+      callback();
+    }
+    ],
+    function(err){
+    if (err) return next(err);
   })
 }
 
@@ -65,6 +74,12 @@ exports.update_data = function(req, res){
 
   models.Director.findOneAndUpdate({"full_name": dirName}, {"favorite_camera": camera, "favorite_movies": movies}, function(err, data){
     res.render('users', {"docs": data});
+  })
+}
+
+exports.list_data = function(req, res){
+  models.Director.find({}, function(err, list_data){
+    res.render('users', {"dirs": list_data});
   })
 }
 

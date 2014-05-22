@@ -33,6 +33,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.post('/directors', routes.submit_data);
 app.post('/update', routes.update_data);
+app.get('/list', routes.list_data);
 
 
 http.createServer(app).listen(app.get('port'), function(){
