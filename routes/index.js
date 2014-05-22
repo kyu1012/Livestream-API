@@ -1,6 +1,7 @@
 var request = require("request");
 var models = require("../models");
 var async = require("async");
+var mongoose = require('mongoose');
 
 /*
  * GET home page.
@@ -23,14 +24,10 @@ exports.submit_data = function(req, res){
     url: apiURL,
     'content-type': 'application/json'
   };
-  // var reqCallback = function(error, response, body) {
-  //   if (!error && response.statusCode == 200) {
-  //     var info = JSON.parse(body);
-  // }
 
-  //query and render user page with updated information after data is saved to mongo
   async.waterfall([
     function(callback){
+      //run request call to get information from Livestream
       request(options, function(error, response, body){
         if (!error && response.statusCode == 200){
           var info = JSON.parse(body);
@@ -39,6 +36,7 @@ exports.submit_data = function(req, res){
       })
     },
     function(body, callback){
+      //parse data from previous callback
       var info = JSON.parse(body);
       var livestream_id = dirID;
       var full_name = info.full_name;
@@ -53,7 +51,7 @@ exports.submit_data = function(req, res){
         favorite_movies = info.favorite_movies;
       };
 
-      //save information into Director schema
+      //set new collection
       var dir = new models.Director({
         'livestream_id': livestream_id,
         'full_name': full_name,
@@ -62,16 +60,24 @@ exports.submit_data = function(req, res){
         'favorite_movies': favorite_movies
       });
 
+      //only save if account non-existant in database
       models.Director.findOne({"livestream_id": dir.livestream_id}, function(err, info){
         if(!info){
           dir.save();
-          callback();
         }
+        callback();
       });
     },
     function(callback){
+      //render the page with account info
       models.Director.findOne({"livestream_id": dirID}, function(err, info){
-        res.render('users', {"docs": info});
+        var dirObj = {
+          full_name: info.full_name,
+          dob: info.dob,
+          favorite_camera: info.favorite_camera,
+          favorite_movies: info.favorite_movies
+        };
+        res.render('users', {"docs": dirObj});
       });
       callback();
     }
@@ -93,6 +99,17 @@ exports.update_data = function(req, res){
 
 exports.list_data = function(req, res){
   models.Director.find({}, function(err, list_data){
-    res.render('users', {"dirs": list_data});
+    var list = [];
+
+    for (var i = 0; i < list_data.length; i++){
+      var obj = {
+        full_name: list_data[i].full_name,
+        dob: list_data[i].dob,
+        favorite_movies: list_data[i].favorite_movies,
+        favorite_camera: list_data[i].favorite_camera
+      }
+      list.push(obj);
+    }
+    res.render('users', {"dirs": list});
   })
 };
