@@ -23,8 +23,22 @@ exports.submit_data = function(req, res){
     url: apiURL,
     'content-type': 'application/json'
   };
-  var reqCallback = function(error, response, body) {
-    if (!error && response.statusCode == 200) {
+  // var reqCallback = function(error, response, body) {
+  //   if (!error && response.statusCode == 200) {
+  //     var info = JSON.parse(body);
+  // }
+
+  //query and render user page with updated information after data is saved to mongo
+  async.waterfall([
+    function(callback){
+      request(options, function(error, response, body){
+        if (!error && response.statusCode == 200){
+          var info = JSON.parse(body);
+          callback(null, body);
+        };
+      })
+    },
+    function(body, callback){
       var info = JSON.parse(body);
       var livestream_id = dirID;
       var full_name = info.full_name;
@@ -48,19 +62,12 @@ exports.submit_data = function(req, res){
         'favorite_movies': favorite_movies
       });
 
-      models.Director.findOne({"livestream_id": dirID}, function(err, info){
+      models.Director.findOne({"livestream_id": dir.livestream_id}, function(err, info){
         if(!info){
           dir.save();
+          callback();
         }
-      })
-    }
-  }
-
-  //query and render user page with updated information after data is saved to mongo
-  async.series([
-    function(callback){
-      request(options, reqCallback);
-      callback();
+      });
     },
     function(callback){
       models.Director.findOne({"livestream_id": dirID}, function(err, info){
