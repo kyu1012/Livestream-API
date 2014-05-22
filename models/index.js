@@ -11,7 +11,7 @@ var directorSchema = new Schema ({
   full_name: String,
   dob: Date,
   favorite_camera: String,
-  favorite_movies: Array
+  favorite_movies: String
 });
 
 var Director = mongoose.model("Director", directorSchema);

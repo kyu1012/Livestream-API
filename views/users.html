@@ -2,11 +2,35 @@
 
 {% block content %}
   <h1> Director's Page</h1>
-  <h2> Your Profile <h2>
-    <ul>
-      {% for dir in docs %}
-      <li> {{dir}} </li>
-      {% endfor %}
-    </ul>
+  <ul> Your Profile </ul>
+    <p>{{docs|json}}</p>
 
+<form class="form-horizontal" role="form" action='/update' method='post'>
+  <div class="form-group">
+    <label for="favMovies" class="col-sm-2 control-label">Movies</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="favMovies" name="favMovies" placeholder="Movies">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="favCamera" class="col-sm-2 control-label">Camera</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="favCamera" name="favCamera" placeholder="Camera">
+    </div>
+  </div>
+    <div class="form-group">
+    <label for="dirName" class="col-sm-2 control-label">Full Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="director_name" name="dirName" placeholder="Full Name">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Update</button>
+    </div>
+  </div>
+</form>
+
+
+  <ul><a href ="#"> List all Directors </a></ul>
 {% endblock %}

@@ -31,8 +31,9 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/directors', routes.users); //creating the directors page
-app.post('/submit', routes.submit_data); //saving directors data into mongoDB
+app.post('/directors', routes.submit_data);
+app.post('/update', routes.update_data);
+
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -1,6 +1,5 @@
 var request = require("request");
 var models = require("../models");
-var http = require('http');
 
 /*
  * GET home page.
@@ -51,9 +50,21 @@ exports.submit_data = function(req, res){
 
   request(options, callback);
 
-
-  models.Director.find({ livestream_id: dirID }, function(err, info){
+  //querys and renders director info on users page
+  // *** Callback issue, use Async ***
+  models.Director.findOne({"livestream_id": dirID}, function(err, info){
     console.log("this is docs from mongo query " + info)
     res.render('users', {"docs": info});
   })
 }
+
+exports.update_data = function(req, res){
+  var movies = req.body.favMovies;
+  var camera = req.body.favCamera;
+  var dirName = req.body.dirName;
+
+  models.Director.findOneAndUpdate({"full_name": dirName}, {"favorite_camera": camera, "favorite_movies": movies}, function(err, data){
+    res.render('users', {"docs": data});
+  })
+}
+
