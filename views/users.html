@@ -2,5 +2,11 @@
 
 {% block content %}
   <h1> Director's Page</h1>
+  <h2> Your Profile <h2>
+    <ul>
+      {% for dir in docs %}
+      <li> {{dir}} </li>
+      {% endfor %}
+    </ul>
 
 {% endblock %}
